@@ -34,6 +34,24 @@ def binary_cross_entropy(y, y_hat):
 loss = binary_cross_entropy(y, y_hat)
 print("Loss:", loss)
 
+
+predictions = np.linspace(0.001, 0.999, 500)
+
+losses = [
+    binary_cross_entropy(1, p)
+    for p in predictions
+]
+
+
+plt.plot(predictions, losses)
+
+plt.xlabel("Prediction")
+plt.ylabel("Binary Cross Entropy")
+plt.title("BCE Loss when y = 1")
+
+plt.grid(True)
+plt.show()
+
 print("\nPrediction vs Loss")
 print("-" * 30)
 
