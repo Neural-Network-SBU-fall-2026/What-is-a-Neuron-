@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/.idea/NeuralNetwork0.iml" afterDir="false" />

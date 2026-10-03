@@ -8,3 +8,11 @@ b = 0.1
 #liniar neuron function
 z = np.dot(w, x) + b
 print("Weighted sum (z):", z)
+
+#activation function
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+y_hat = sigmoid(z)
+print("Prediction:", y_hat)
