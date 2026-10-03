@@ -32,3 +32,24 @@ def binary_cross_entropy(y, y_hat):
 
 loss = binary_cross_entropy(y, y_hat)
 print("Loss:", loss)
+
+print("\nPrediction vs Loss")
+print("-" * 30)
+
+predictions = np.array([
+    0.01,
+    0.10,
+    0.30,
+    0.50,
+    0.70,
+    0.90,
+    0.99
+])
+
+for prediction in predictions:
+    loss = binary_cross_entropy(1, prediction)
+
+    print(
+        f"Prediction: {prediction:.2f} | "
+        f"Loss: {loss:.4f}"
+    )
