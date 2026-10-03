@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 #input data
 x = np.array([2.0, 3.0, 1.0])
