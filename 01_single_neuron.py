@@ -13,6 +13,12 @@ print("Weighted sum (z):", z)
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
+y_hat = sigmoid(z)
+print("Prediction:", y_hat)
+
+#actual lable
+y = 1
+print("Actual label:", y)
 
 def binary_cross_entropy(y, y_hat):
     epsilon = 1e-15
@@ -26,10 +32,3 @@ def binary_cross_entropy(y, y_hat):
 
 loss = binary_cross_entropy(y, y_hat)
 print("Loss:", loss)
-
-y_hat = sigmoid(z)
-print("Prediction:", y_hat)
-
-#actual lable
-y = 1
-print("Actual label:", y)
