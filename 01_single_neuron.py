@@ -13,6 +13,9 @@ print("Weighted sum (z):", z)
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-
 y_hat = sigmoid(z)
 print("Prediction:", y_hat)
+
+#actual lable
+y = 1
+print("Actual label:", y)
