@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="actual lable" />
+    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="plot">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -58,7 +60,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1791016918903</updated>
-      <workItem from="1791016947336" duration="800000" />
+      <workItem from="1791016947336" duration="1769000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -100,7 +102,47 @@
       <option name="project" value="LOCAL" />
       <updated>1791017726291</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="loss">
+      <option name="closed" value="true" />
+      <created>1791017828009</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1791017828009</updated>
+    </task>
+    <task id="LOCAL-00007" summary="loss">
+      <option name="closed" value="true" />
+      <created>1791017850009</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1791017850009</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Prediction vs Loss">
+      <option name="closed" value="true" />
+      <created>1791017897502</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1791017897502</updated>
+    </task>
+    <task id="LOCAL-00009" summary="plot">
+      <option name="closed" value="true" />
+      <created>1791017976281</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1791017976281</updated>
+    </task>
+    <task id="LOCAL-00010" summary="plot">
+      <option name="closed" value="true" />
+      <created>1791018238727</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1791018238727</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,9 +154,12 @@
     <MESSAGE value="liniar neuron function" />
     <MESSAGE value="ctivation function" />
     <MESSAGE value="actual lable" />
-    <option name="LAST_COMMIT_MESSAGE" value="actual lable" />
+    <MESSAGE value="loss" />
+    <MESSAGE value="Prediction vs Loss" />
+    <MESSAGE value="plot" />
+    <option name="LAST_COMMIT_MESSAGE" value="plot" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/NeuralNetwork0$01_single_neuron.coverage" NAME="01_single_neuron Coverage Results" MODIFIED="1791017896414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NeuralNetwork0$01_single_neuron.coverage" NAME="01_single_neuron Coverage Results" MODIFIED="1791018061003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
