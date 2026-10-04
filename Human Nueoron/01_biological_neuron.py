@@ -1,57 +1,43 @@
 """
-01_biological_neuron.py
-=======================
+02_neural_network_pro.py
+========================
 
-Interactive physiological neuron simulator
--------------------------------------------
+Interactive biophysical neuron + neural network simulator
+---------------------------------------------------------
 
-هدف:
-    شبیه‌سازی یک نورون زیستی به‌صورت قابل توسعه، با تمرکز بر:
-
-    * غشای سلولی و ظرفیت خازنی
-    * پتانسیل استراحت
-    * کانال‌های ولتاژ-وابسته Na+ و K+
-    * جریان نشتی
-    * مدل Hodgkin-Huxley برای تولید Action Potential
-    * دندریت‌ها، سوما، Axon Hillock، آکسون و پایانه آکسونی
-    * سیناپس‌های تحریکی و مهاری
-    * EPSP / IPSP
-    * دوره refractory
-    * نمایش زنده در pygame
-    * نمودار ولتاژ و جریان‌ها
-    * ثبت رویدادهای Action Potential
-    * تحریک دستی با کلید SPACE
-    * تحریک سیناپسی با کلید E / I
-    * تحریک دوره‌ای با کلید T
-    * توقف/ادامه با P
-    * بازنشانی با R
-
-نکته علمی:
-    این برنامه «تمام فیزیولوژی نورون انسانی» را مدل نمی‌کند.
-    نورون واقعی بسیار پیچیده‌تر است و به کانال‌های یونی متعدد،
-    morphology سه‌بعدی، compartmentهای متعدد، Ca2+ dynamics،
-    neurotransmitter kinetics، شبکه‌های مولکولی و غیره نیاز دارد.
-
-    هسته این نسخه بر Hodgkin-Huxley کلاسیک بنا شده است و به‌صورت
-    آگاهانه به‌عنوان یک مدل biophysical قابل توسعه نوشته شده است.
+ویژگی‌ها:
+    * مدل Hodgkin-Huxley کامل
+    * ظاهر حرفه‌ای نورون (سوما، دندریت درختی، آکسون میلین‌دار، پایانه)
+    * امکان ساخت شبکه‌ی چندنورونی با اتصالات سیناپسی
+    * نمایش زنده‌ی پتانسیل غشاء، گیت‌ها و جریان‌ها
+    * تحریک دستی، سیناپسی و دوره‌ای
+    * refractory period
+    * event-based spike propagation
 
 نصب:
     pip install pygame numpy
 
 اجرا:
-    python 01_biological_neuron.py
+    python 02_neural_network_pro.py
+
+کنترل‌ها:
+    SPACE : پالس جریان قوی
+    E     : سیناپس تحریکی
+    I     : سیناپس مهاری
+    T     : تحریک دوره‌ای
+    P     : توقف / ادامه
+    R     : بازنشانی
+    N     : جابه‌جایی بین حالت تک‌نورون و شبکه
+    ESC   : خروج
 """
 
 from __future__ import annotations
 
 import math
-import random
-import time
 from dataclasses import dataclass, field
 from collections import deque
-from typing import Deque, List, Tuple
+from typing import Deque, List, Tuple, Optional
 
-import numpy as np
 import pygame
 
 
@@ -60,57 +46,46 @@ import pygame
 # ============================================================
 
 WIDTH = 1500
-HEIGHT = 900
+HEIGHT = 920
 FPS = 60
 
-# Simulation time:
-# هر فریم pygame چند گام کوچک فیزیولوژیک را اجرا می‌کند.
 DT_MS = 0.02
 STEPS_PER_FRAME = 5
 
-# Hodgkin-Huxley canonical parameters
-CM = 1.0                 # uF/cm^2
-G_NA_MAX = 120.0        # mS/cm^2
-G_K_MAX = 36.0           # mS/cm^2
-G_L = 0.3                # mS/cm^2
+CM = 1.0
+G_NA_MAX = 120.0
+G_K_MAX = 36.0
+G_L = 0.3
 
-E_NA = 50.0              # mV
-E_K = -77.0              # mV
-E_L = -54.387            # mV
+E_NA = 50.0
+E_K = -77.0
+E_L = -54.387
 
-RESTING_VOLTAGE = -65.0  # mV
+RESTING_VOLTAGE = -65.0
 
-# Synaptic reversal potentials
-E_EXCITATORY = 0.0       # mV, AMPA-like approximation
-E_INHIBITORY = -75.0     # mV, GABA-like approximation
+E_EXCITATORY = 0.0
+E_INHIBITORY = -75.0
 
-# Synaptic time constants
-TAU_EXCITATORY = 3.0     # ms
-TAU_INHIBITORY = 8.0     # ms
+TAU_EXCITATORY = 3.0
+TAU_INHIBITORY = 8.0
 
-# Visualization
 GRAPH_X = 30
-GRAPH_Y = 620
+GRAPH_Y = 650
 GRAPH_W = 1440
 GRAPH_H = 230
 
-NEURON_CENTER = (760, 300)
+SINGLE_NEURON_CENTER = (760, 320)
 
 
 # ============================================================
-# 2. UTILITY FUNCTIONS
+# 2. UTILITY
 # ============================================================
 
-def clamp(value: float, low: float, high: float) -> float:
-    return max(low, min(high, value))
+def clamp(v: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, v))
 
 
 def alpha_n(v: float) -> float:
-    """
-    Hodgkin-Huxley alpha_n.
-
-    n controls potassium-channel activation.
-    """
     x = v + 55.0
     if abs(x) < 1e-9:
         return 0.1
@@ -118,16 +93,10 @@ def alpha_n(v: float) -> float:
 
 
 def beta_n(v: float) -> float:
-    """Potassium-channel deactivation rate."""
     return 0.125 * math.exp(-(v + 65.0) / 80.0)
 
 
 def alpha_m(v: float) -> float:
-    """
-    Sodium-channel activation rate.
-
-    m rises rapidly during depolarization.
-    """
     x = v + 40.0
     if abs(x) < 1e-9:
         return 1.0
@@ -135,72 +104,52 @@ def alpha_m(v: float) -> float:
 
 
 def beta_m(v: float) -> float:
-    """Sodium-channel activation decay."""
     return 4.0 * math.exp(-(v + 65.0) / 18.0)
 
 
 def alpha_h(v: float) -> float:
-    """Sodium-channel availability/inactivation rate."""
     return 0.07 * math.exp(-(v + 65.0) / 20.0)
 
 
 def beta_h(v: float) -> float:
-    """Sodium-channel recovery rate."""
     return 1.0 / (1.0 + math.exp(-(v + 35.0) / 10.0))
 
 
-def steady_state_gate(v: float, alpha_fn, beta_fn) -> float:
-    """Calculate x_inf = alpha / (alpha + beta)."""
-    a = alpha_fn(v)
-    b = beta_fn(v)
+def steady_state_gate(v: float, a_fn, b_fn) -> float:
+    a = a_fn(v)
+    b = b_fn(v)
     return a / (a + b)
 
 
+def lerp_color(c1, c2, t: float):
+    t = clamp(t, 0.0, 1.0)
+    return (
+        int(c1[0] + (c2[0] - c1[0]) * t),
+        int(c1[1] + (c2[1] - c1[1]) * t),
+        int(c1[2] + (c2[2] - c1[2]) * t),
+    )
+
+
 # ============================================================
-# 3. PHYSIOLOGICAL STATE
+# 3. ION STATE
 # ============================================================
 
 @dataclass
 class IonState:
-    """
-    State of the main Hodgkin-Huxley gating variables.
-
-    m:
-        Sodium activation.
-
-    h:
-        Sodium inactivation.
-
-    n:
-        Potassium activation.
-    """
-
     m: float = field(default_factory=lambda: steady_state_gate(
-        RESTING_VOLTAGE, alpha_m, beta_m
-    ))
+        RESTING_VOLTAGE, alpha_m, beta_m))
     h: float = field(default_factory=lambda: steady_state_gate(
-        RESTING_VOLTAGE, alpha_h, beta_h
-    ))
+        RESTING_VOLTAGE, alpha_h, beta_h))
     n: float = field(default_factory=lambda: steady_state_gate(
-        RESTING_VOLTAGE, alpha_n, beta_n
-    ))
+        RESTING_VOLTAGE, alpha_n, beta_n))
 
+
+# ============================================================
+# 4. SYNAPSE (biological, used inside a neuron)
+# ============================================================
 
 @dataclass
 class Synapse:
-    """
-    ساده‌ترین مدل conductance-based synapse.
-
-    نوع:
-        excitatory -> E_syn ~= 0 mV
-        inhibitory -> E_syn ~= -75 mV
-
-    activation:
-        با دریافت spike افزایش می‌یابد.
-
-    سپس activation با یک decay نمایی کاهش پیدا می‌کند.
-    """
-
     kind: str
     tau_ms: float
     reversal_potential: float
@@ -211,77 +160,10 @@ class Synapse:
         self.conductance += self.peak_conductance * strength
 
     def update(self, dt_ms: float) -> None:
-        decay = math.exp(-dt_ms / self.tau_ms)
-        self.conductance *= decay
+        self.conductance *= math.exp(-dt_ms / self.tau_ms)
 
-    def current(self, voltage: float) -> float:
-        """
-        I_syn = g_syn * (V - E_syn)
-        """
-        return self.conductance * (voltage - self.reversal_potential)
-
-
-# ============================================================
-# 4. BIOLOGICAL COMPARTMENTS
-# ============================================================
-
-@dataclass
-class Dendrite:
-    """
-    Dendrite به‌صورت یک compartment ساده.
-
-    در نسخه‌های بعدی می‌توانیم هر dendrite را به چندین
-    compartment تقسیم کنیم و morphology واقعی را وارد کنیم.
-    """
-
-    length_um: float
-    diameter_um: float
-    excitatory_synapses: int = 0
-    inhibitory_synapses: int = 0
-
-    def surface_area(self) -> float:
-        return math.pi * self.diameter_um * self.length_um
-
-
-@dataclass
-class Soma:
-    """
-    Cell body.
-
-    سوما محل اصلی یکپارچه‌سازی جریان‌های ورودی در این مدل است.
-    """
-
-    diameter_um: float = 20.0
-
-    def surface_area(self) -> float:
-        return 4.0 * math.pi * (self.diameter_um / 2.0) ** 2
-
-
-@dataclass
-class Axon:
-    """
-    Axon با در نظر گرفتن myelin و Node of Ranvier.
-
-    propagation در این نسخه به‌صورت visualization/event-based
-    نمایش داده می‌شود؛ هنوز یک cable equation چند-compartment
-    کامل برای آکسون اجرا نمی‌شود.
-    """
-
-    length_um: float = 1000.0
-    diameter_um: float = 1.0
-    node_count: int = 20
-    myelinated: bool = True
-
-    @property
-    def conduction_delay_ms(self) -> float:
-        if self.myelinated:
-            # مقدار تقریبی صرفاً برای visualization.
-            velocity_m_per_s = 100.0
-        else:
-            velocity_m_per_s = 1.0
-
-        length_m = self.length_um * 1e-6
-        return 1000.0 * length_m / velocity_m_per_s
+    def current(self, v: float) -> float:
+        return self.conductance * (v - self.reversal_potential)
 
 
 # ============================================================
@@ -290,14 +172,10 @@ class Axon:
 
 @dataclass
 class ActionPotential:
-    """
-    یک رویداد spike برای visualization و ارتباط نورون‌ها.
-    """
-
     created_at_ms: float
     amplitude: float = 100.0
     progress: float = 0.0
-    speed: float = 0.04
+    speed: float = 0.025
 
     def update(self) -> None:
         self.progress += self.speed
@@ -308,32 +186,12 @@ class ActionPotential:
 
 
 # ============================================================
-# 6. MAIN BIOPHYSICAL NEURON
+# 6. BIOLOGICAL NEURON
 # ============================================================
 
 class BiologicalNeuron:
-    """
-    نورون biophysical مبتنی بر Hodgkin-Huxley.
-
-    ساختار:
-
-        Dendrites
-            |
-            v
-          Soma
-            |
-       Axon Hillock
-            |
-            v
-          Axon
-            |
-            v
-      Axon Terminal
-
-    هسته الکتریکی در این نسخه در soma/hillock متمرکز است.
-    """
-
-    def __init__(self) -> None:
+    def __init__(self, name: str = "N1") -> None:
+        self.name = name
         self.time_ms = 0.0
 
         self.voltage = RESTING_VOLTAGE
@@ -341,19 +199,6 @@ class BiologicalNeuron:
 
         self.ions = IonState()
 
-        # Morphology
-        self.dendrites: List[Dendrite] = [
-            Dendrite(160, 3.5, excitatory_synapses=4),
-            Dendrite(130, 2.5, excitatory_synapses=3),
-            Dendrite(110, 2.0, inhibitory_synapses=2),
-            Dendrite(190, 3.0, excitatory_synapses=4),
-            Dendrite(100, 2.0, inhibitory_synapses=1),
-        ]
-
-        self.soma = Soma()
-        self.axon = Axon()
-
-        # Synapses
         self.excitatory_synapse = Synapse(
             kind="excitatory",
             tau_ms=TAU_EXCITATORY,
@@ -368,215 +213,120 @@ class BiologicalNeuron:
             peak_conductance=0.12,
         )
 
-        # External current
         self.external_current = 0.0
 
-        # Refractory state
         self.absolute_refractory_remaining = 0.0
         self.relative_refractory_remaining = 0.0
 
-        # Spike detection
         self.spike_count = 0
         self.last_spike_time = -math.inf
         self.spike_events: List[float] = []
 
-        # Propagating visual events
         self.action_potentials: List[ActionPotential] = []
+        self.recently_fired = False
 
-        # Diagnostics
         self.current_na = 0.0
         self.current_k = 0.0
         self.current_l = 0.0
         self.current_exc = 0.0
         self.current_inh = 0.0
 
-    # --------------------------------------------------------
-    # GATING DYNAMICS
-    # --------------------------------------------------------
-
+    # ---------------------------
+    # Gating
+    # ---------------------------
     def update_gates(self, dt_ms: float) -> None:
-        """
-        dx/dt = alpha_x(V)(1-x) - beta_x(V)x
-
-        Integration:
-            Euler method.
-
-        برای پایداری، مقادیر gate بین 0 و 1 محدود می‌شوند.
-        """
-
         v = self.voltage
-
         dm = alpha_m(v) * (1.0 - self.ions.m) - beta_m(v) * self.ions.m
         dh = alpha_h(v) * (1.0 - self.ions.h) - beta_h(v) * self.ions.h
         dn = alpha_n(v) * (1.0 - self.ions.n) - beta_n(v) * self.ions.n
 
-        self.ions.m += dt_ms * dm
-        self.ions.h += dt_ms * dh
-        self.ions.n += dt_ms * dn
+        self.ions.m = clamp(self.ions.m + dt_ms * dm, 0.0, 1.0)
+        self.ions.h = clamp(self.ions.h + dt_ms * dh, 0.0, 1.0)
+        self.ions.n = clamp(self.ions.n + dt_ms * dn, 0.0, 1.0)
 
-        self.ions.m = clamp(self.ions.m, 0.0, 1.0)
-        self.ions.h = clamp(self.ions.h, 0.0, 1.0)
-        self.ions.n = clamp(self.ions.n, 0.0, 1.0)
-
-    # --------------------------------------------------------
-    # IONIC CURRENTS
-    # --------------------------------------------------------
-
+    # ---------------------------
+    # Currents
+    # ---------------------------
     def calculate_ionic_currents(self) -> Tuple[float, float, float]:
-        """
-        Hodgkin-Huxley:
-
-        I_Na = g_Na * m^3 * h * (V - E_Na)
-        I_K  = g_K  * n^4     * (V - E_K)
-        I_L  = g_L            * (V - E_L)
-        """
-
         g_na = G_NA_MAX * (self.ions.m ** 3) * self.ions.h
         g_k = G_K_MAX * (self.ions.n ** 4)
 
         i_na = g_na * (self.voltage - E_NA)
         i_k = g_k * (self.voltage - E_K)
         i_l = G_L * (self.voltage - E_L)
-
         return i_na, i_k, i_l
 
-    # --------------------------------------------------------
-    # SPIKE DETECTION
-    # --------------------------------------------------------
-
+    # ---------------------------
+    # Spike
+    # ---------------------------
     def detect_spike(self) -> bool:
-        """
-        Spike را هنگام عبور صعودی از threshold تشخیص می‌دهیم.
-
-        این threshold برای event detection است، نه اینکه
-        تولید action potential را به‌صورت if/else انجام دهد.
-        """
-
-        threshold = 0.0
-
-        return (
-            self.previous_voltage < threshold
-            and self.voltage >= threshold
-        )
+        return (self.previous_voltage < 0.0 <= self.voltage)
 
     def emit_spike(self) -> None:
         self.spike_count += 1
         self.last_spike_time = self.time_ms
         self.spike_events.append(self.time_ms)
-
-        # محدود کردن حافظه eventها
         if len(self.spike_events) > 1000:
             self.spike_events.pop(0)
 
         self.action_potentials.append(
             ActionPotential(created_at_ms=self.time_ms)
         )
-
-        # Absolute refractory period
         self.absolute_refractory_remaining = 1.0
-
-        # Relative refractory period
         self.relative_refractory_remaining = 3.0
+        self.recently_fired = True
 
-    # --------------------------------------------------------
-    # SIMULATION STEP
-    # --------------------------------------------------------
-
+    # ---------------------------
+    # Step
+    # ---------------------------
     def step(self, dt_ms: float) -> None:
-        """
-        اجرای یک گام زمانی فیزیولوژیک.
-
-        ترتیب:
-
-            1. synapse decay
-            2. refractory timers
-            3. ionic gates
-            4. ionic currents
-            5. synaptic currents
-            6. membrane equation
-            7. spike detection
-            8. event propagation
-        """
-
         self.previous_voltage = self.voltage
 
-        # Synaptic kinetics
         self.excitatory_synapse.update(dt_ms)
         self.inhibitory_synapse.update(dt_ms)
 
-        # Refractory timers
         self.absolute_refractory_remaining = max(
-            0.0,
-            self.absolute_refractory_remaining - dt_ms
-        )
-
+            0.0, self.absolute_refractory_remaining - dt_ms)
         self.relative_refractory_remaining = max(
-            0.0,
-            self.relative_refractory_remaining - dt_ms
-        )
+            0.0, self.relative_refractory_remaining - dt_ms)
 
-        # Update gates
         self.update_gates(dt_ms)
 
-        # Currents
         self.current_na, self.current_k, self.current_l = \
             self.calculate_ionic_currents()
 
         self.current_exc = self.excitatory_synapse.current(self.voltage)
         self.current_inh = self.inhibitory_synapse.current(self.voltage)
 
-        total_ionic_current = (
-            self.current_na
-            + self.current_k
-            + self.current_l
-        )
+        total_ionic = (
+            self.current_na + self.current_k + self.current_l)
+        total_syn = self.current_exc + self.current_inh
 
-        total_synaptic_current = (
-            self.current_exc
-            + self.current_inh
-        )
+        net = self.external_current - total_ionic - total_syn
+        dV = net / CM
 
-        # Membrane equation:
-        #
-        # C_m dV/dt = I_ext - I_ion - I_syn
-        #
-        net_current = (
-            self.external_current
-            - total_ionic_current
-            - total_synaptic_current
-        )
-
-        dV_dt = net_current / CM
-
-        # Absolute refractory:
-        # در مدل ساده از اعمال تحریک خارجی شدید جلوگیری می‌کنیم.
         if self.absolute_refractory_remaining > 0.0:
-            dV_dt *= 0.05
+            dV *= 0.05
 
-        self.voltage += dt_ms * dV_dt
-
-        # Numerical safety
-        self.voltage = clamp(self.voltage, -100.0, 60.0)
-
+        self.voltage = clamp(
+            self.voltage + dt_ms * dV, -100.0, 60.0)
         self.time_ms += dt_ms
 
-        # Spike detection
         if self.detect_spike():
             self.emit_spike()
 
-        # Update visual AP events
-        for event in self.action_potentials:
-            event.update()
-
+        for ev in self.action_potentials:
+            ev.update()
         self.action_potentials = [
-            event for event in self.action_potentials
-            if not event.finished
-        ]
+            e for e in self.action_potentials if not e.finished]
 
-    # --------------------------------------------------------
-    # STIMULATION
-    # --------------------------------------------------------
+        # reset the visual "just fired" flag
+        if self.recently_fired and self.time_ms - self.last_spike_time > 4.0:
+            self.recently_fired = False
 
+    # ---------------------------
+    # Stimulation
+    # ---------------------------
     def stimulate_current(self, current: float) -> None:
         self.external_current = current
 
@@ -586,32 +336,24 @@ class BiologicalNeuron:
     def stimulate_inhibitory(self, strength: float = 1.0) -> None:
         self.inhibitory_synapse.trigger(strength)
 
-    # --------------------------------------------------------
-    # RESET
-    # --------------------------------------------------------
-
+    # ---------------------------
+    # Reset
+    # ---------------------------
     def reset(self) -> None:
         self.time_ms = 0.0
         self.voltage = RESTING_VOLTAGE
         self.previous_voltage = RESTING_VOLTAGE
         self.ions = IonState()
-
         self.external_current = 0.0
-
         self.excitatory_synapse.conductance = 0.0
         self.inhibitory_synapse.conductance = 0.0
-
         self.absolute_refractory_remaining = 0.0
         self.relative_refractory_remaining = 0.0
-
         self.spike_count = 0
         self.last_spike_time = -math.inf
         self.spike_events.clear()
         self.action_potentials.clear()
-
-    # --------------------------------------------------------
-    # INFORMATION
-    # --------------------------------------------------------
+        self.recently_fired = False
 
     def firing_rate_hz(self, window_ms: float = 1000.0) -> float:
         cutoff = self.time_ms - window_ms
@@ -620,16 +362,88 @@ class BiologicalNeuron:
 
 
 # ============================================================
-# 7. DATA LOGGER
+# 7. NETWORK
+# ============================================================
+
+@dataclass
+class SynapticConnection:
+    """اتصال سیناپسی بین دو نورون در شبکه."""
+    source: int
+    target: int
+    weight: float = 1.0
+    kind: str = "excitatory"   # یا "inhibitory"
+    delay_ms: float = 1.0
+    # buffer of pending deliveries: (arrival_time, weight)
+    pending: List[Tuple[float, float]] = field(default_factory=list)
+
+    def schedule(self, now_ms: float) -> None:
+        self.pending.append((now_ms + self.delay_ms, self.weight))
+
+
+class NeuralNetwork:
+    """شبکه‌ی عصبی ساده با اتصالات سیناپسی و تأخیر."""
+
+    def __init__(self, neurons: List[BiologicalNeuron]) -> None:
+        self.neurons = neurons
+        self.connections: List[SynapticConnection] = []
+
+    def add_connection(
+        self,
+        source: int,
+        target: int,
+        weight: float = 1.0,
+        kind: str = "excitatory",
+        delay_ms: float = 1.0,
+    ) -> None:
+        self.connections.append(
+            SynapticConnection(source, target, weight, kind, delay_ms)
+        )
+
+    def step(self, dt_ms: float) -> None:
+        # 1) step all neurons
+        for n in self.neurons:
+            n.step(dt_ms)
+
+        # 2) detect newly fired neurons, schedule deliveries
+        now = self.neurons[0].time_ms if self.neurons else 0.0
+        for n in self.neurons:
+            if n.recently_fired and n.last_spike_time > now - dt_ms * 1.5:
+                # only schedule once per spike
+                pass
+
+        # Use a cleaner approach: each neuron reports spikes via a queue
+        for idx, n in enumerate(self.neurons):
+            if n.spike_events and n.spike_events[-1] >= now - dt_ms * 1.5:
+                for c in self.connections:
+                    if c.source == idx:
+                        c.schedule(now)
+
+        # 3) deliver pending
+        for c in self.connections:
+            remaining = []
+            for arrival, w in c.pending:
+                if arrival <= now:
+                    tgt = self.neurons[c.target]
+                    if c.kind == "excitatory":
+                        tgt.stimulate_excitatory(w)
+                    else:
+                        tgt.stimulate_inhibitory(w)
+                else:
+                    remaining.append((arrival, w))
+            c.pending = remaining
+
+    def reset(self) -> None:
+        for n in self.neurons:
+            n.reset()
+        for c in self.connections:
+            c.pending.clear()
+
+
+# ============================================================
+# 8. HISTORY
 # ============================================================
 
 class SimulationHistory:
-    """
-    نگهداری داده‌های اخیر برای رسم نمودار.
-
-    برای جلوگیری از رشد نامحدود حافظه از deque استفاده شده است.
-    """
-
     def __init__(self, maxlen: int = 1600) -> None:
         self.time: Deque[float] = deque(maxlen=maxlen)
         self.voltage: Deque[float] = deque(maxlen=maxlen)
@@ -647,507 +461,570 @@ class SimulationHistory:
         self.inh.append(neuron.current_inh)
 
     def clear(self) -> None:
-        self.time.clear()
-        self.voltage.clear()
-        self.na.clear()
-        self.k.clear()
-        self.exc.clear()
-        self.inh.clear()
+        for d in (self.time, self.voltage, self.na,
+                  self.k, self.exc, self.inh):
+            d.clear()
 
 
 # ============================================================
-# 8. PYGAME VISUALIZER
+# 9. VISUALIZER
 # ============================================================
 
 class Visualizer:
-    """
-    رابط گرافیکی کامل pygame.
-
-    مسئولیت این کلاس فقط visualization است؛
-    منطق فیزیولوژی داخل BiologicalNeuron باقی می‌ماند.
-    """
-
-    BG = (12, 16, 24)
+    BG = (10, 14, 22)
     PANEL = (20, 27, 39)
+    PANEL_2 = (28, 36, 52)
     GRID = (45, 55, 70)
-    TEXT = (225, 230, 240)
+    TEXT = (230, 235, 245)
     MUTED = (150, 160, 175)
-    DENDRITE = (90, 180, 220)
-    SOMA = (210, 130, 90)
-    AXON = (150, 180, 110)
-    ACTIVE = (255, 210, 80)
-    EXC = (100, 220, 130)
-    INH = (210, 100, 120)
+    ACCENT = (90, 180, 255)
 
-    def __init__(self, neuron: BiologicalNeuron) -> None:
+    DENDRITE = (95, 175, 220)
+    DENDRITE_DARK = (55, 110, 150)
+    SOMA = (215, 135, 95)
+    SOMA_DARK = (150, 80, 55)
+    SOMA_HOT = (255, 220, 120)
+    NUCLEUS = (60, 70, 95)
+    NUCLEUS_LIGHT = (130, 145, 175)
+    AXON = (170, 195, 120)
+    AXON_DARK = (105, 125, 75)
+    MYELIN = (85, 100, 130)
+    MYELIN_LIGHT = (110, 130, 165)
+    ACTIVE = (255, 210, 80)
+    EXC = (100, 225, 130)
+    INH = (220, 105, 130)
+    CONN_EXC = (100, 225, 130, 120)
+    CONN_INH = (220, 105, 130, 120)
+
+    def __init__(self, mode: str = "single") -> None:
         pygame.init()
         pygame.display.set_caption(
-            "Biological Neuron Simulator — Hodgkin-Huxley"
-        )
+            "Biological Neuron & Neural Network Simulator")
 
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
 
         self.font = pygame.font.SysFont("consolas", 18)
         self.small_font = pygame.font.SysFont("consolas", 15)
+        self.tiny_font = pygame.font.SysFont("consolas", 13)
         self.title_font = pygame.font.SysFont("consolas", 24, bold=True)
 
-        self.neuron = neuron
+        self.mode = mode  # "single" or "network"
+
+        # single neuron
+        self.neuron = BiologicalNeuron("N1")
         self.history = SimulationHistory()
+
+        # network
+        self.network = self._build_demo_network()
+        self.network_histories = [
+            SimulationHistory() for _ in self.network.neurons
+        ]
 
         self.running = True
         self.paused = False
 
         self.manual_stimulus = False
         self.periodic_stimulus = False
-
         self.periodic_timer = 0.0
         self.periodic_interval = 500.0
 
     # --------------------------------------------------------
-    # TEXT
+    # Network setup
     # --------------------------------------------------------
+    def _build_demo_network(self) -> NeuralNetwork:
+        """ساخت یک شبکه‌ی نمونه: 3 نورون با اتصالات."""
+        n1 = BiologicalNeuron("N1")
+        n2 = BiologicalNeuron("N2")
+        n3 = BiologicalNeuron("N3")
 
-    def draw_text(
-        self,
-        text: str,
-        x: int,
-        y: int,
-        color=None,
-        font=None
-    ) -> None:
+        net = NeuralNetwork([n1, n2, n3])
+        net.add_connection(0, 1, weight=0.9,
+                           kind="excitatory", delay_ms=2.0)
+        net.add_connection(1, 2, weight=0.9,
+                           kind="excitatory", delay_ms=2.0)
+        net.add_connection(0, 2, weight=0.5,
+                           kind="excitatory", delay_ms=3.0)
+        net.add_connection(2, 0, weight=0.7,
+                           kind="inhibitory", delay_ms=2.5)
+        return net
+
+    # --------------------------------------------------------
+    # Text helper
+    # --------------------------------------------------------
+    def draw_text(self, text, x, y, color=None, font=None):
         if color is None:
             color = self.TEXT
         if font is None:
             font = self.font
-
         surface = font.render(text, True, color)
         self.screen.blit(surface, (x, y))
 
     # --------------------------------------------------------
-    # NEURON DRAWING
+    # PROFESSIONAL NEURON DRAWING
     # --------------------------------------------------------
+    def _draw_soma(self, cx, cy, radius, voltage):
+        """سوما با گرادیان، هسته و هاله‌ی فعالیت."""
+        # Activity halo
+        if voltage > -45:
+            intensity = clamp((voltage + 45) / 60.0, 0.0, 1.0)
+            for i in range(6, 0, -1):
+                r = radius + i * 5
+                alpha = int(60 * intensity * (i / 6.0))
+                surf = pygame.Surface((r * 2, r * 2), pygame.SRCALPHA)
+                pygame.draw.circle(
+                    surf, (255, 210, 80, alpha), (r, r), r)
+                self.screen.blit(surf, (cx - r, cy - r))
 
-    def draw_neuron(self) -> None:
-        cx, cy = NEURON_CENTER
+        # Body base
+        pygame.draw.circle(self.screen, self.SOMA_DARK,
+                           (cx, cy), radius)
+        # Gradient highlight
+        for i in range(radius, 0, -3):
+            t = 1.0 - (i / radius)
+            col = lerp_color(self.SOMA_DARK, self.SOMA, t)
+            pygame.draw.circle(self.screen, col,
+                               (cx - 2, cy - 2), i)
 
-        # Dendrites
-        dendrite_points = [
-            ((cx - 60, cy - 25), (cx - 220, cy - 100)),
-            ((cx - 60, cy - 5), (cx - 250, cy - 35)),
-            ((cx - 55, cy + 20), (cx - 230, cy + 80)),
-            ((cx - 45, cy + 35), (cx - 170, cy + 135)),
-            ((cx - 75, cy - 45), (cx - 160, cy - 145)),
-        ]
-
-        for start, end in dendrite_points:
-            pygame.draw.line(
-                self.screen,
-                self.DENDRITE,
-                start,
-                end,
-                7
-            )
-
-            # Branches
-            mx = (start[0] + end[0]) // 2
-            my = (start[1] + end[1]) // 2
-
-            pygame.draw.line(
-                self.screen,
-                self.DENDRITE,
-                (mx, my),
-                (mx - 50, my - 35),
-                4
-            )
-
-            pygame.draw.line(
-                self.screen,
-                self.DENDRITE,
-                (mx, my),
-                (mx - 45, my + 35),
-                4
-            )
-
-        # Synaptic buttons
-        for i in range(8):
-            angle = i * math.pi / 4.0
-            x = cx - 220 + int(math.cos(angle) * 20)
-            y = cy + int(math.sin(angle) * 100)
-
-            pygame.draw.circle(
-                self.screen,
-                self.EXC if i % 3 else self.INH,
-                (x, y),
-                6
-            )
-
-        # Soma
-        soma_color = self.SOMA
-
-        if self.neuron.voltage > -40:
-            soma_color = self.ACTIVE
-
-        pygame.draw.ellipse(
-            self.screen,
-            soma_color,
-            pygame.Rect(cx - 70, cy - 70, 140, 140)
-        )
+        # Hot overlay when firing
+        if voltage > -20:
+            t = clamp((voltage + 20) / 60.0, 0.0, 1.0)
+            col = lerp_color(self.SOMA, self.SOMA_HOT, t)
+            pygame.draw.circle(self.screen, col, (cx, cy), radius - 4)
 
         # Nucleus
-        pygame.draw.circle(
-            self.screen,
-            (70, 80, 100),
-            (cx, cy),
-            28
-        )
+        pygame.draw.circle(self.screen, self.NUCLEUS,
+                           (cx, cy), int(radius * 0.42))
+        pygame.draw.circle(self.screen, self.NUCLEUS_LIGHT,
+                           (cx - 3, cy - 3), int(radius * 0.18))
 
-        pygame.draw.circle(
-            self.screen,
-            (120, 135, 160),
-            (cx, cy),
-            10
-        )
+    def _draw_dendrite_branch(self, start, end, depth, max_depth=2):
+        """رسم بازگشتی دندریت درختی."""
+        pygame.draw.line(self.screen, self.DENDRITE_DARK,
+                         start, end, max(2, 7 - depth * 2))
+        pygame.draw.line(self.screen, self.DENDRITE,
+                         start, end, max(1, 5 - depth * 2))
 
-        # Axon hillock
-        hillock = [
-            (cx + 60, cy - 30),
-            (cx + 120, cy - 18),
-            (cx + 120, cy + 18),
-            (cx + 60, cy + 30),
-        ]
+        if depth >= max_depth:
+            # synaptic bouton
+            pygame.draw.circle(self.screen, self.DENDRITE,
+                               end, 4)
+            return
 
-        pygame.draw.polygon(
-            self.screen,
-            self.AXON,
-            hillock
-        )
+        mx = (start[0] + end[0]) / 2
+        my = (start[1] + end[1]) / 2
 
-        # Axon
-        axon_start = cx + 115
-        axon_end = 1320
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        length = math.hypot(dx, dy) + 1e-6
 
-        pygame.draw.line(
-            self.screen,
-            self.AXON,
-            (axon_start, cy),
-            (axon_end, cy),
-            12
-        )
+        # perpendicular
+        px = -dy / length
+        py = dx / length
 
-        # Myelin segments
-        node_count = 10
-        segment_length = (
-            axon_end - axon_start
-        ) / node_count
+        spread = length * 0.35
+        b1 = (mx + px * spread, my + py * spread)
+        b2 = (mx - px * spread, my - py * spread)
+
+        self._draw_dendrite_branch(
+            (mx, my), b1, depth + 1, max_depth)
+        self._draw_dendrite_branch(
+            (mx, my), b2, depth + 1, max_depth)
+
+    def _draw_axon(self, start_x, end_x, cy, progress_points, myelinated=True):
+        """آکسون میلین‌دار با گره‌های رانویه و امواج AP."""
+        # main axon
+        pygame.draw.line(self.screen, self.AXON_DARK,
+                         (start_x, cy), (end_x, cy), 14)
+        pygame.draw.line(self.screen, self.AXON,
+                         (start_x, cy), (end_x, cy), 10)
+
+        node_count = 12
+        seg = (end_x - start_x) / node_count
 
         for i in range(node_count):
-            x = int(
-                axon_start
-                + i * segment_length
-                + segment_length * 0.1
-            )
-            w = int(segment_length * 0.72)
+            x = int(start_x + i * seg + seg * 0.08)
+            w = int(seg * 0.78)
 
-            pygame.draw.rect(
-                self.screen,
-                (85, 100, 125),
-                (x, cy - 14, w, 28),
-                border_radius=7
-            )
+            if myelinated:
+                pygame.draw.rect(
+                    self.screen, self.MYELIN,
+                    (x, cy - 15, w, 30),
+                    border_radius=8)
+                pygame.draw.rect(
+                    self.screen, self.MYELIN_LIGHT,
+                    (x + 2, cy - 13, w - 4, 10),
+                    border_radius=6)
 
-        # Action potential wave
-        for event in self.neuron.action_potentials:
-            x = int(
-                axon_start
-                + event.progress
-                * (axon_end - axon_start)
-            )
+            # Node of Ranvier
+            node_x = int(start_x + (i + 1) * seg)
+            pygame.draw.circle(self.screen, self.ACTIVE,
+                               (node_x, cy), 4)
 
-            pygame.draw.circle(
-                self.screen,
-                self.ACTIVE,
-                (x, cy),
-                17
-            )
+        # Progress points (spikes propagating)
+        for ev in progress_points:
+            x = int(start_x + ev.progress * (end_x - start_x))
+            # glow
+            for r, a in ((20, 40), (14, 80), (9, 160)):
+                surf = pygame.Surface((r * 2, r * 2), pygame.SRCALPHA)
+                pygame.draw.circle(
+                    surf, (255, 210, 80, a), (r, r), r)
+                self.screen.blit(surf, (x - r, cy - r))
+            pygame.draw.circle(self.screen, self.ACTIVE, (x, cy), 9)
 
-        # Axon terminals
-        terminal_x = axon_end
+    def _draw_terminals(self, x, cy):
+        """پایانه‌های آکسونی با دکمه‌های سیناپسی."""
+        for i, offset in enumerate((-34, 0, 34)):
+            end = (x + 55, cy + offset)
+            pygame.draw.line(self.screen, self.AXON_DARK,
+                             (x, cy), end, 7)
+            pygame.draw.line(self.screen, self.AXON,
+                             (x, cy), end, 4)
 
-        for offset in (-30, 0, 30):
-            pygame.draw.line(
-                self.screen,
-                self.AXON,
-                (terminal_x, cy),
-                (terminal_x + 60, cy + offset),
-                6
-            )
+            # synaptic bouton
+            color = self.EXC if i != 1 else self.INH
+            pygame.draw.circle(self.screen, color,
+                               (end[0] + 6, end[1]), 10)
+            pygame.draw.circle(self.screen, (255, 255, 255),
+                               (end[0] + 6, end[1]), 10, 2)
+            pygame.draw.circle(self.screen, (255, 255, 255),
+                               (end[0] + 3, end[1] - 3), 3)
 
-            pygame.draw.circle(
-                self.screen,
-                self.EXC if offset != 0 else self.INH,
-                (terminal_x + 65, cy + offset),
-                9
-            )
+    def draw_neuron_single(self):
+        """رسم نورون حرفه‌ای در حالت تک‌نورون."""
+        cx, cy = SINGLE_NEURON_CENTER
 
-        # Labels
-        self.draw_text(
-            "DENDRITES",
-            cx - 240,
-            cy - 180,
-            self.MUTED,
-            self.small_font
-        )
+        # ---- Dendrites (recursive tree) ----
+        dendrite_roots = [
+            ((cx - 70, cy - 55), (cx - 260, cy - 150)),
+            ((cx - 75, cy - 15), (cx - 300, cy - 60)),
+            ((cx - 70, cy + 30), (cx - 280, cy + 90)),
+            ((cx - 55, cy + 60), (cx - 200, cy + 160)),
+            ((cx - 45, cy - 75), (cx - 170, cy - 180)),
+        ]
+        for start, end in dendrite_roots:
+            self._draw_dendrite_branch(start, end, 0, max_depth=2)
 
-        self.draw_text(
-            "SOMA",
-            cx - 25,
-            cy + 85,
-            self.MUTED,
-            self.small_font
-        )
+        # ---- Soma ----
+        self._draw_soma(cx, cy, 72, self.neuron.voltage)
 
-        self.draw_text(
-            "AXON HILLOCK",
-            cx + 70,
-            cy - 65,
-            self.MUTED,
-            self.small_font
-        )
+        # ---- Axon hillock ----
+        hillock = [
+            (cx + 60, cy - 34),
+            (cx + 130, cy - 20),
+            (cx + 130, cy + 20),
+            (cx + 60, cy + 34),
+        ]
+        pygame.draw.polygon(self.screen, self.AXON_DARK, hillock)
+        pygame.draw.polygon(self.screen, self.AXON, hillock, 2)
 
-        self.draw_text(
-            "MYELINATED AXON",
-            1000,
-            cy - 45,
-            self.MUTED,
-            self.small_font
-        )
+        # ---- Axon ----
+        axon_start = cx + 125
+        axon_end = 1330
+        self._draw_axon(
+            axon_start, axon_end, cy,
+            self.neuron.action_potentials, myelinated=True)
 
-        self.draw_text(
-            "AXON TERMINAL",
-            1270,
-            cy + 50,
-            self.MUTED,
-            self.small_font
-        )
+        # ---- Terminals ----
+        self._draw_terminals(axon_end, cy)
+
+        # ---- Labels ----
+        self.draw_text("DENDRITES", cx - 290, cy - 205,
+                       self.MUTED, self.small_font)
+        self.draw_text("SOMA", cx - 22, cy + 88,
+                       self.MUTED, self.small_font)
+        self.draw_text("AXON HILLOCK", cx + 70, cy - 70,
+                       self.MUTED, self.small_font)
+        self.draw_text("MYELINATED AXON", 1010, cy - 50,
+                       self.MUTED, self.small_font)
+        self.draw_text("NODE OF RANVIER", 1010, cy + 40,
+                       self.MUTED, self.small_font)
+        self.draw_text("TERMINALS", 1290, cy + 75,
+                       self.MUTED, self.small_font)
+
+    # --------------------------------------------------------
+    # NETWORK DRAWING
+    # --------------------------------------------------------
+    def draw_network(self):
+        """رسم شبکه‌ی نورون‌ها با اتصالات."""
+        positions = [
+            (330, 320),
+            (760, 200),
+            (1150, 360),
+        ]
+
+        # ---- Connections ----
+        for c in self.network.connections:
+            x1, y1 = positions[c.source]
+            x2, y2 = positions[c.target]
+
+            color = (self.EXC if c.kind == "excitatory"
+                     else self.INH)
+
+            # curved line
+            mx = (x1 + x2) // 2
+            my = (y1 + y2) // 2 - 70
+
+            points = []
+            for t in [i / 20.0 for i in range(21)]:
+                px = (1 - t) ** 2 * x1 + 2 * (1 - t) * t * mx + t ** 2 * x2
+                py = (1 - t) ** 2 * y1 + 2 * (1 - t) * t * my + t ** 2 * y2
+                points.append((px, py))
+
+            # thickness by weight
+            w = max(1, int(c.weight * 5))
+            pygame.draw.lines(self.screen, color, False,
+                              [(int(p[0]), int(p[1])) for p in points], w)
+
+            # arrow head
+            if len(points) >= 2:
+                p1 = points[-2]
+                p2 = points[-1]
+                dx = p2[0] - p1[0]
+                dy = p2[1] - p1[1]
+                L = math.hypot(dx, dy) + 1e-6
+                ux, uy = dx / L, dy / L
+                # shrink to stop at neuron boundary
+                tip = (p2[0] - ux * 70, p2[1] - uy * 70)
+                left = (tip[0] - ux * 12 - uy * 7,
+                        tip[1] - uy * 12 + ux * 7)
+                right = (tip[0] - ux * 12 + uy * 7,
+                         tip[1] - uy * 12 - ux * 7)
+                pygame.draw.polygon(self.screen, color,
+                                    [tip, left, right])
+
+            # label
+            self.draw_text(
+                f"{c.kind[0].upper()} w={c.weight:.1f}",
+                int(mx) - 30, int(my) - 10,
+                self.MUTED, self.tiny_font)
+
+        # ---- Neurons ----
+        for i, (nx, ny) in enumerate(positions):
+            n = self.network.neurons[i]
+
+            # Dendrites (smaller, radial)
+            for k in range(6):
+                ang = k * math.pi / 3.0 + 0.3
+                ex = nx + math.cos(ang) * 120
+                ey = ny + math.sin(ang) * 120
+                self._draw_dendrite_branch(
+                    (nx, ny), (ex, ey), depth=0, max_depth=1)
+
+            # Soma
+            self._draw_soma(nx, ny, 45, n.voltage)
+
+            # Axon stub
+            pygame.draw.line(self.screen, self.AXON_DARK,
+                             (nx + 40, ny), (nx + 75, ny), 7)
+            pygame.draw.line(self.screen, self.AXON,
+                             (nx + 40, ny), (nx + 75, ny), 4)
+
+            # Name
+            self.draw_text(n.name, nx - 14, ny - 70,
+                           self.TEXT, self.font)
+
+            # Voltage label
+            self.draw_text(f"{n.voltage:6.1f} mV",
+                           nx - 38, ny + 52,
+                           self.ACTIVE if n.voltage > -45 else self.MUTED,
+                           self.tiny_font)
+
+            # Spikes
+            self.draw_text(f"spikes: {n.spike_count}",
+                           nx - 40, ny + 68,
+                           self.MUTED, self.tiny_font)
+
+        # legend
+        self.draw_text("EXCITATORY", 1200, 60,
+                       self.EXC, self.small_font)
+        pygame.draw.line(self.screen, self.EXC,
+                         (1160, 78), (1190, 78), 4)
+        self.draw_text("INHIBITORY", 1200, 90,
+                       self.INH, self.small_font)
+        pygame.draw.line(self.screen, self.INH,
+                         (1160, 108), (1190, 108), 4)
 
     # --------------------------------------------------------
     # GRAPH
     # --------------------------------------------------------
+    def draw_graph(self):
+        x0, y0 = GRAPH_X, GRAPH_Y
+        w, h = GRAPH_W, GRAPH_H
 
-    def draw_graph(self) -> None:
-        x0 = GRAPH_X
-        y0 = GRAPH_Y
-        w = GRAPH_W
-        h = GRAPH_H
+        pygame.draw.rect(self.screen, self.PANEL,
+                         (x0, y0, w, h), border_radius=10)
+        pygame.draw.rect(self.screen, self.PANEL_2,
+                         (x0, y0, w, h), 2, border_radius=10)
 
-        pygame.draw.rect(
-            self.screen,
-            self.PANEL,
-            (x0, y0, w, h),
-            border_radius=8
-        )
-
-        # Grid
         for i in range(1, 10):
             x = x0 + i * w // 10
-            pygame.draw.line(
-                self.screen,
-                self.GRID,
-                (x, y0),
-                (x, y0 + h),
-                1
-            )
-
+            pygame.draw.line(self.screen, self.GRID,
+                             (x, y0), (x, y0 + h), 1)
         for i in range(1, 5):
             y = y0 + i * h // 5
-            pygame.draw.line(
-                self.screen,
-                self.GRID,
-                (x0, y),
-                (x0 + w, y),
-                1
-            )
+            pygame.draw.line(self.screen, self.GRID,
+                             (x0, y), (x0 + w, y), 1)
 
-        # Voltage scaling
-        values = list(self.history.voltage)
+        # choose which histories to draw
+        if self.mode == "single":
+            datasets = [(self.history, self.ACTIVE, "V (single)")]
+        else:
+            colors = [self.ACTIVE, self.EXC, self.INH]
+            datasets = []
+            for i, hist in enumerate(self.network_histories):
+                datasets.append(
+                    (hist, colors[i % len(colors)],
+                     self.network.neurons[i].name))
 
-        if len(values) < 2:
-            return
+        for hist, color, label in datasets:
+            values = list(hist.voltage)
+            if len(values) < 2:
+                continue
+            pts = []
+            for i, v in enumerate(values):
+                px = x0 + int(i / (len(values) - 1) * w)
+                norm = (v + 100.0) / 160.0
+                py = y0 + h - int(norm * h)
+                pts.append((px, py))
+            pygame.draw.lines(self.screen, color, False, pts, 2)
 
-        def point(index: int, value: float) -> Tuple[int, int]:
-            px = x0 + int(index / (len(values) - 1) * w)
-
-            # -100 mV -> bottom
-            # +60 mV -> top
-            normalized = (value + 100.0) / 160.0
-            py = y0 + h - int(normalized * h)
-
-            return px, py
-
-        points = [
-            point(i, v)
-            for i, v in enumerate(values)
-        ]
-
-        if len(points) >= 2:
-            pygame.draw.lines(
-                self.screen,
-                self.ACTIVE,
-                False,
-                points,
-                2
-            )
-
-        # Zero line
+        # zero line
         zero_y = y0 + h - int((100.0 / 160.0) * h)
+        pygame.draw.line(self.screen, self.GRID,
+                         (x0, zero_y), (x0 + w, zero_y), 1)
 
-        pygame.draw.line(
-            self.screen,
-            self.GRID,
-            (x0, zero_y),
-            (x0 + w, zero_y),
-            1
-        )
+        self.draw_text("MEMBRANE POTENTIAL", x0 + 15, y0 + 10,
+                       self.TEXT, self.small_font)
+        self.draw_text("+60 mV", x0 + w - 75, y0 + 10,
+                       self.MUTED, self.tiny_font)
+        self.draw_text("0 mV", x0 + w - 60, zero_y - 18,
+                       self.MUTED, self.tiny_font)
+        self.draw_text("-100 mV", x0 + w - 80, y0 + h - 20,
+                       self.MUTED, self.tiny_font)
 
-        self.draw_text(
-            "MEMBRANE POTENTIAL",
-            x0 + 15,
-            y0 + 10,
-            self.TEXT,
-            self.small_font
-        )
-
-        self.draw_text(
-            "+60 mV",
-            x0 + w - 70,
-            y0 + 10,
-            self.MUTED,
-            self.small_font
-        )
-
-        self.draw_text(
-            "0 mV",
-            x0 + w - 60,
-            zero_y - 18,
-            self.MUTED,
-            self.small_font
-        )
-
-        self.draw_text(
-            "-100 mV",
-            x0 + w - 75,
-            y0 + h - 20,
-            self.MUTED,
-            self.small_font
-        )
+        # legend
+        lx = x0 + 180
+        for _, color, label in datasets:
+            pygame.draw.rect(self.screen, color, (lx, y0 + 12, 12, 12))
+            self.draw_text(label, lx + 18, y0 + 10,
+                           self.MUTED, self.tiny_font)
+            lx += 100
 
     # --------------------------------------------------------
-    # INFORMATION PANEL
+    # INFO
     # --------------------------------------------------------
+    def draw_info(self):
+        x, y = 30, 30
 
-    def draw_info(self) -> None:
-        x = 30
-        y = 40
+        title = ("BIOLOGICAL NEURON — SINGLE"
+                 if self.mode == "single"
+                 else "NEURAL NETWORK")
+        self.draw_text(title, x, y, self.TEXT, self.title_font)
 
-        self.draw_text(
-            "BIOLOGICAL NEURON SIMULATOR",
-            x,
-            y,
-            self.TEXT,
-            self.title_font
-        )
-
-        lines = [
-            f"Simulation time : {self.neuron.time_ms:8.2f} ms",
-            f"Membrane V      : {self.neuron.voltage:8.2f} mV",
-            f"Na gate (m)     : {self.neuron.ions.m:8.4f}",
-            f"Na gate (h)     : {self.neuron.ions.h:8.4f}",
-            f"K gate  (n)     : {self.neuron.ions.n:8.4f}",
-            f"I_Na            : {self.neuron.current_na:8.3f}",
-            f"I_K             : {self.neuron.current_k:8.3f}",
-            f"I_Leak          : {self.neuron.current_l:8.3f}",
-            f"I_Excitatory    : {self.neuron.current_exc:8.3f}",
-            f"I_Inhibitory    : {self.neuron.current_inh:8.3f}",
-            f"Spikes          : {self.neuron.spike_count}",
-            f"Firing rate     : {self.neuron.firing_rate_hz():8.2f} Hz",
-        ]
+        if self.mode == "single":
+            n = self.neuron
+            lines = [
+                f"time          : {n.time_ms:9.2f} ms",
+                f"membrane V    : {n.voltage:9.2f} mV",
+                f"Na gate m     : {n.ions.m:9.4f}",
+                f"Na gate h     : {n.ions.h:9.4f}",
+                f"K  gate n     : {n.ions.n:9.4f}",
+                f"I_Na          : {n.current_na:9.3f}",
+                f"I_K           : {n.current_k:9.3f}",
+                f"I_Leak        : {n.current_l:9.3f}",
+                f"I_Excitatory  : {n.current_exc:9.3f}",
+                f"I_Inhibitory  : {n.current_inh:9.3f}",
+                f"spikes        : {n.spike_count}",
+                f"firing rate   : {n.firing_rate_hz():9.2f} Hz",
+            ]
+        else:
+            lines = []
+            for nn in self.network.neurons:
+                lines.append(
+                    f"{nn.name}: V={nn.voltage:7.2f} mV  "
+                    f"spk={nn.spike_count:3d}  "
+                    f"fr={nn.firing_rate_hz():6.1f} Hz"
+                )
+            lines.append("")
+            lines.append(f"connections: {len(self.network.connections)}")
 
         for i, line in enumerate(lines):
-            self.draw_text(
-                line,
-                x,
-                y + 42 + i * 19,
-                self.MUTED,
-                self.small_font
-            )
+            self.draw_text(line, x, y + 45 + i * 19,
+                           self.MUTED, self.small_font)
 
-        # Controls
-        control_x = 1150
-
+        # Controls panel
+        cx = WIDTH - 320
         controls = [
             "CONTROLS",
-            "SPACE : strong current pulse",
+            "SPACE : current pulse",
             "E     : excitatory synapse",
             "I     : inhibitory synapse",
-            "T     : toggle periodic stimulation",
+            "T     : toggle periodic",
             "P     : pause / resume",
             "R     : reset",
+            "N     : single / network",
             "ESC   : quit",
         ]
-
-        for i, text in enumerate(controls):
+        for i, t in enumerate(controls):
             self.draw_text(
-                text,
-                control_x,
-                45 + i * 22,
+                t, cx, 45 + i * 22,
                 self.TEXT if i == 0 else self.MUTED,
-                self.font if i == 0 else self.small_font
-            )
+                self.font if i == 0 else self.small_font)
+
+        # Mode badge
+        badge = "MODE: " + ("SINGLE" if self.mode == "single" else "NETWORK")
+        self.draw_text(badge, WIDTH - 320, 20, self.ACCENT, self.font)
 
     # --------------------------------------------------------
-    # PERIODIC STIMULATION
+    # Periodic stimulation
     # --------------------------------------------------------
-
-    def update_periodic_stimulation(self, dt_ms: float) -> None:
+    def update_periodic_stimulation(self, dt_ms: float):
         if not self.periodic_stimulus:
             return
-
         self.periodic_timer += dt_ms
-
         if self.periodic_timer >= self.periodic_interval:
             self.periodic_timer = 0.0
-            self.neuron.stimulate_current(10.0)
-
+            if self.mode == "single":
+                self.neuron.stimulate_current(10.0)
+            else:
+                self.network.neurons[0].stimulate_current(10.0)
         else:
-            # Current is turned off between pulses.
-            self.neuron.stimulate_current(0.0)
+            if self.mode == "single":
+                self.neuron.stimulate_current(0.0)
+            else:
+                self.network.neurons[0].stimulate_current(0.0)
 
     # --------------------------------------------------------
-    # EVENT LOOP
+    # Events
     # --------------------------------------------------------
-
-    def handle_events(self) -> None:
+    def handle_events(self):
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
 
                 elif event.key == pygame.K_SPACE:
-                    # Briefly inject current.
                     self.manual_stimulus = True
-                    self.neuron.stimulate_current(15.0)
+                    if self.mode == "single":
+                        self.neuron.stimulate_current(15.0)
+                    else:
+                        self.network.neurons[0].stimulate_current(20.0)
 
                 elif event.key == pygame.K_e:
-                    self.neuron.stimulate_excitatory(1.0)
+                    if self.mode == "single":
+                        self.neuron.stimulate_excitatory(1.0)
+                    else:
+                        self.network.neurons[0].stimulate_excitatory(1.0)
 
                 elif event.key == pygame.K_i:
-                    self.neuron.stimulate_inhibitory(1.0)
+                    if self.mode == "single":
+                        self.neuron.stimulate_inhibitory(1.0)
+                    else:
+                        self.network.neurons[0].stimulate_inhibitory(1.0)
 
                 elif event.key == pygame.K_t:
                     self.periodic_stimulus = not self.periodic_stimulus
@@ -1157,53 +1034,61 @@ class Visualizer:
                     self.paused = not self.paused
 
                 elif event.key == pygame.K_r:
-                    self.neuron.reset()
-                    self.history.clear()
+                    if self.mode == "single":
+                        self.neuron.reset()
+                        self.history.clear()
+                    else:
+                        self.network.reset()
+                        for h in self.network_histories:
+                            h.clear()
+
+                elif event.key == pygame.K_n:
+                    self.mode = ("network" if self.mode == "single"
+                                 else "single")
 
             elif event.type == pygame.KEYUP:
-
                 if event.key == pygame.K_SPACE:
                     self.manual_stimulus = False
                     if not self.periodic_stimulus:
-                        self.neuron.stimulate_current(0.0)
+                        if self.mode == "single":
+                            self.neuron.stimulate_current(0.0)
+                        else:
+                            self.network.neurons[0].stimulate_current(0.0)
 
     # --------------------------------------------------------
-    # RUN
+    # Run
     # --------------------------------------------------------
-
-    def run(self) -> None:
-        accumulator = 0.0
-
+    def run(self):
         while self.running:
             self.handle_events()
 
             if not self.paused:
-                # Periodic stimulation
                 self.update_periodic_stimulation(
-                    DT_MS * STEPS_PER_FRAME
-                )
+                    DT_MS * STEPS_PER_FRAME)
 
-                # Multiple tiny physiological steps per frame
-                for _ in range(STEPS_PER_FRAME):
-                    self.neuron.step(DT_MS)
+                if self.mode == "single":
+                    for _ in range(STEPS_PER_FRAME):
+                        self.neuron.step(DT_MS)
+                    self.history.append(self.neuron)
+                else:
+                    for _ in range(STEPS_PER_FRAME):
+                        self.network.step(DT_MS)
+                    for i, n in enumerate(self.network.neurons):
+                        self.network_histories[i].append(n)
 
-                self.history.append(self.neuron)
-
-            # Rendering
             self.screen.fill(self.BG)
 
-            self.draw_neuron()
+            if self.mode == "single":
+                self.draw_neuron_single()
+            else:
+                self.draw_network()
+
             self.draw_graph()
             self.draw_info()
 
             if self.paused:
-                self.draw_text(
-                    "PAUSED",
-                    WIDTH // 2 - 50,
-                    570,
-                    self.ACTIVE,
-                    self.title_font
-                )
+                self.draw_text("PAUSED", WIDTH // 2 - 45, 600,
+                               self.ACTIVE, self.title_font)
 
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -1212,34 +1097,8 @@ class Visualizer:
 
 
 # ============================================================
-# 9. EXPERIMENTS
-# ============================================================
-
-def run_single_neuron_experiment() -> None:
-    """
-    نقطه ورود اصلی.
-
-    اینجا در آینده می‌توانیم experimentهای استاندارد neuroscience
-    را اضافه کنیم:
-
-        * Current clamp
-        * Voltage clamp
-        * Frequency-current curve
-        * Refractory period measurement
-        * Synaptic integration
-        * EPSP/IPSP summation
-        * Noise stimulation
-        * STDP
-    """
-
-    neuron = BiologicalNeuron()
-    visualizer = Visualizer(neuron)
-    visualizer.run()
-
-
-# ============================================================
 # 10. ENTRY POINT
 # ============================================================
 
 if __name__ == "__main__":
-    run_single_neuron_experiment()
+    Visualizer(mode="single").run()
