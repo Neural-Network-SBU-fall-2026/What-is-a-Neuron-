@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="plot">
+    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="loss functions test backward">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,7 +62,7 @@
       <option name="presentableId" value="Default" />
       <updated>1791016918903</updated>
       <workItem from="1791016947336" duration="1769000" />
-      <workItem from="1791112805189" duration="262000" />
+      <workItem from="1791112805189" duration="625000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -192,7 +192,15 @@
       <option name="project" value="LOCAL" />
       <updated>1791113044854</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="loss functions test backward">
+      <option name="closed" value="true" />
+      <created>1791113137502</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1791113137502</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,9 +215,16 @@
     <MESSAGE value="loss" />
     <MESSAGE value="Prediction vs Loss" />
     <MESSAGE value="plot" />
-    <option name="LAST_COMMIT_MESSAGE" value="plot" />
+    <MESSAGE value="loss functions libs" />
+    <MESSAGE value="loss functions mse_loss" />
+    <MESSAGE value="loss functions mae_loss" />
+    <MESSAGE value="loss functions binary_cross_entropy" />
+    <MESSAGE value="loss functions real sample" />
+    <MESSAGE value="loss functions test backward" />
+    <option name="LAST_COMMIT_MESSAGE" value="loss functions test backward" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/NeuralNetwork0$02_loss_functions.coverage" NAME="02_loss_functions Coverage Results" MODIFIED="1791113134577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_single_neuron.coverage" NAME="01_single_neuron Coverage Results" MODIFIED="1791018061003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
