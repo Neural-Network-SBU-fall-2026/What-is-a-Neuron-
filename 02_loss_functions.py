@@ -63,3 +63,30 @@ for prediction in predictions:
         f"{mae:<15.4f}"
         f"{bce:<15.4f}"
     )
+
+
+print("\n" + "=" * 60)
+print("BAD PREDICTION ANALYSIS")
+print("=" * 60)
+
+y_true = 1
+
+bad_predictions = [
+    0.5,
+    0.1,
+    0.01,
+    0.001
+]
+
+for prediction in bad_predictions:
+
+    mse = mse_loss(y_true, prediction)
+    mae = mae_loss(y_true, prediction)
+    bce = binary_cross_entropy(y_true, prediction)
+
+    print(
+        f"Prediction = {prediction:.3f} | "
+        f"MSE = {mse:.4f} | "
+        f"MAE = {mae:.4f} | "
+        f"BCE = {bce:.4f}"
+    )

@@ -22,9 +22,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="3KB31LJMKpNHE3e2nzK2GxCfSjZ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -34,6 +34,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.01_single_neuron.executor": "Run",
+    "Python.02_loss_functions.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -61,6 +62,7 @@
       <option name="presentableId" value="Default" />
       <updated>1791016918903</updated>
       <workItem from="1791016947336" duration="1769000" />
+      <workItem from="1791112805189" duration="262000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -142,7 +144,55 @@
       <option name="project" value="LOCAL" />
       <updated>1791018238727</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="plot">
+      <option name="closed" value="true" />
+      <created>1791112885663</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1791112885663</updated>
+    </task>
+    <task id="LOCAL-00012" summary="loss functions libs">
+      <option name="closed" value="true" />
+      <created>1791112933306</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1791112933307</updated>
+    </task>
+    <task id="LOCAL-00013" summary="loss functions mse_loss">
+      <option name="closed" value="true" />
+      <created>1791112962636</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1791112962636</updated>
+    </task>
+    <task id="LOCAL-00014" summary="loss functions mae_loss">
+      <option name="closed" value="true" />
+      <created>1791112983481</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1791112983481</updated>
+    </task>
+    <task id="LOCAL-00015" summary="loss functions binary_cross_entropy">
+      <option name="closed" value="true" />
+      <created>1791113008822</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1791113008822</updated>
+    </task>
+    <task id="LOCAL-00016" summary="loss functions real sample">
+      <option name="closed" value="true" />
+      <created>1791113044854</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1791113044854</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
