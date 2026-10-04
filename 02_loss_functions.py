@@ -27,3 +27,39 @@ def binary_cross_entropy(y_true, y_pred):
     )
 
     return np.mean(loss)
+
+
+
+
+y_true = 1
+
+predictions = np.array([
+    0.01,
+    0.10,
+    0.30,
+    0.50,
+    0.70,
+    0.90,
+    0.99
+])
+
+
+print("=" * 60)
+print("LOSS COMPARISON")
+print("=" * 60)
+
+print(f"{'Prediction':<15} {'MSE':<15} {'MAE':<15} {'BCE':<15}")
+print("-" * 60)
+
+for prediction in predictions:
+
+    mse = mse_loss(y_true, prediction)
+    mae = mae_loss(y_true, prediction)
+    bce = binary_cross_entropy(y_true, prediction)
+
+    print(
+        f"{prediction:<15.2f}"
+        f"{mse:<15.4f}"
+        f"{mae:<15.4f}"
+        f"{bce:<15.4f}"
+    )
