@@ -36,56 +36,22 @@ print("relu: ", y_relu)
 
 
 # ============================================================
-# Plot Sigmoid
+# Plot All Activation Functions Together
 # ============================================================
 
 plt.figure(figsize=(9, 5))
 
-plt.plot(x, y_sigmoid)
+plt.plot(x, y_sigmoid, label="Sigmoid", linewidth=2)
+plt.plot(x, y_tanh, label="Tanh", linewidth=2)
+plt.plot(x, y_relu, label="ReLU", linewidth=2)
 
-plt.axhline(0, linewidth=0.8)
-plt.axvline(0, linewidth=0.8)
-
-plt.xlabel("x")
-plt.ylabel("Sigmoid(x)")
-plt.title("Sigmoid Activation Function")
-
-plt.grid(True)
-plt.show()
-
-# ============================================================
-# Plot Tanh
-# ============================================================
-
-plt.figure(figsize=(9, 5))
-
-plt.plot(x, y_tanh)
-
-plt.axhline(0, linewidth=0.8)
-plt.axvline(0, linewidth=0.8)
+plt.axhline(0, linewidth=0.8, color='black')
+plt.axvline(0, linewidth=0.8, color='black')
 
 plt.xlabel("x")
-plt.ylabel("Tanh(x)")
-plt.title("Tanh Activation Function")
+plt.ylabel("f(x)")
+plt.title("Activation Functions Comparison")
 
-plt.grid(True)
-plt.show()
-
-
-# ============================================================
-# Plot ReLU
-# ============================================================
-
-plt.figure(figsize=(9, 5))
-
-plt.plot(x, y_relu)
-
-plt.axhline(0, linewidth=0.8)
-plt.axvline(0, linewidth=0.8)
-
-plt.xlabel("x")
-plt.ylabel("ReLU(x)")
-plt.title("ReLU Activation Function")
-
+plt.legend()
 plt.grid(True)
 plt.show()
