@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="activation_functions plt">
-      <change beforePath="$PROJECT_DIR$/03_activation_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/03_activation_functions.py" afterDir="false" />
-    </list>
+    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="activation_functions plt sigmoid" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,7 +67,7 @@
       <workItem from="1791016947336" duration="1769000" />
       <workItem from="1791112805189" duration="2163000" />
       <workItem from="1791191584917" duration="617000" />
-      <workItem from="1791204893403" duration="722000" />
+      <workItem from="1791204893403" duration="1237000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -271,7 +269,39 @@
       <option name="project" value="LOCAL" />
       <updated>1791205516055</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="activation_functions plt sigmoid">
+      <option name="closed" value="true" />
+      <created>1791205654451</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205654451</updated>
+    </task>
+    <task id="LOCAL-00027" summary="activation_functions plt sigmoid">
+      <option name="closed" value="true" />
+      <created>1791205699516</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205699516</updated>
+    </task>
+    <task id="LOCAL-00028" summary="activation_functions plt sigmoid">
+      <option name="closed" value="true" />
+      <created>1791205774626</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205774626</updated>
+    </task>
+    <task id="LOCAL-00029" summary="activation_functions plt sigmoid">
+      <option name="closed" value="true" />
+      <created>1791205831802</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205831802</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -299,12 +329,13 @@
     <MESSAGE value="activation_functions relu" />
     <MESSAGE value="activation_functions Test" />
     <MESSAGE value="activation_functions plt" />
-    <option name="LAST_COMMIT_MESSAGE" value="activation_functions plt" />
+    <MESSAGE value="activation_functions plt sigmoid" />
+    <option name="LAST_COMMIT_MESSAGE" value="activation_functions plt sigmoid" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_biological_neuron.coverage" NAME="01_biological_neuron Coverage Results" MODIFIED="1791204968113" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Human Nueoron" />
     <SUITE FILE_PATH="coverage/NeuralNetwork0$02_loss_functions.coverage" NAME="02_loss_functions Coverage Results" MODIFIED="1791113134577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_single_neuron.coverage" NAME="01_single_neuron Coverage Results" MODIFIED="1791018061003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NeuralNetwork0$03_activation_functions.coverage" NAME="03_activation_functions Coverage Results" MODIFIED="1791205615638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NeuralNetwork0$03_activation_functions.coverage" NAME="03_activation_functions Coverage Results" MODIFIED="1791205807875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
