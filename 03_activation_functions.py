@@ -52,3 +52,40 @@ plt.title("Sigmoid Activation Function")
 
 plt.grid(True)
 plt.show()
+
+# ============================================================
+# Plot Tanh
+# ============================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, y_tanh)
+
+plt.axhline(0, linewidth=0.8)
+plt.axvline(0, linewidth=0.8)
+
+plt.xlabel("x")
+plt.ylabel("Tanh(x)")
+plt.title("Tanh Activation Function")
+
+plt.grid(True)
+plt.show()
+
+
+# ============================================================
+# Plot ReLU
+# ============================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, y_relu)
+
+plt.axhline(0, linewidth=0.8)
+plt.axvline(0, linewidth=0.8)
+
+plt.xlabel("x")
+plt.ylabel("ReLU(x)")
+plt.title("ReLU Activation Function")
+
+plt.grid(True)
+plt.show()
