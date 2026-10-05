@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="readme">
-      <change afterPath="$PROJECT_DIR$/03_activation_functions.py" afterDir="false" />
+    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="activation_functions plt">
+      <change beforePath="$PROJECT_DIR$/03_activation_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/03_activation_functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,22 +34,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.01_biological_neuron.executor&quot;: &quot;Run&quot;,
-    &quot;Python.01_single_neuron.executor&quot;: &quot;Run&quot;,
-    &quot;Python.02_loss_functions.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.01_biological_neuron.executor": "Run",
+    "Python.01_single_neuron.executor": "Run",
+    "Python.02_loss_functions.executor": "Run",
+    "Python.03_activation_functions.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -68,7 +69,7 @@
       <workItem from="1791016947336" duration="1769000" />
       <workItem from="1791112805189" duration="2163000" />
       <workItem from="1791191584917" duration="617000" />
-      <workItem from="1791204893403" duration="406000" />
+      <workItem from="1791204893403" duration="722000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -230,7 +231,47 @@
       <option name="project" value="LOCAL" />
       <updated>1791205095133</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="activation_functions sigmoid">
+      <option name="closed" value="true" />
+      <created>1791205325295</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205325295</updated>
+    </task>
+    <task id="LOCAL-00022" summary="activation_functions tanh">
+      <option name="closed" value="true" />
+      <created>1791205354458</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205354458</updated>
+    </task>
+    <task id="LOCAL-00023" summary="activation_functions relu">
+      <option name="closed" value="true" />
+      <created>1791205381209</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205381209</updated>
+    </task>
+    <task id="LOCAL-00024" summary="activation_functions Test">
+      <option name="closed" value="true" />
+      <created>1791205466036</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205466036</updated>
+    </task>
+    <task id="LOCAL-00025" summary="activation_functions plt">
+      <option name="closed" value="true" />
+      <created>1791205516055</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1791205516055</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -253,11 +294,17 @@
     <MESSAGE value="loss functions test backward" />
     <MESSAGE value="bio neoron" />
     <MESSAGE value="readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="readme" />
+    <MESSAGE value="activation_functions libs" />
+    <MESSAGE value="activation_functions tanh" />
+    <MESSAGE value="activation_functions relu" />
+    <MESSAGE value="activation_functions Test" />
+    <MESSAGE value="activation_functions plt" />
+    <option name="LAST_COMMIT_MESSAGE" value="activation_functions plt" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_biological_neuron.coverage" NAME="01_biological_neuron Coverage Results" MODIFIED="1791204968113" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Human Nueoron" />
     <SUITE FILE_PATH="coverage/NeuralNetwork0$02_loss_functions.coverage" NAME="02_loss_functions Coverage Results" MODIFIED="1791113134577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_single_neuron.coverage" NAME="01_single_neuron Coverage Results" MODIFIED="1791018061003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NeuralNetwork0$03_activation_functions.coverage" NAME="03_activation_functions Coverage Results" MODIFIED="1791205615638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
