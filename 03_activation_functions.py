@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -27,3 +28,22 @@ y_relu = relu(x)
 print("Sigmoid: ", y_sigmoid)
 print("Tanh: ", y_tanh)
 print("relu: ", y_relu)
+
+
+# ============================================================
+# Plot Sigmoid
+# ============================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, y_sigmoid)
+
+plt.axhline(0, linewidth=0.8)
+plt.axvline(0, linewidth=0.8)
+
+plt.xlabel("x")
+plt.ylabel("Sigmoid(x)")
+plt.title("Sigmoid Activation Function")
+
+plt.grid(True)
+plt.show()
