@@ -13,3 +13,9 @@ import matplotlib.pyplot as plt
 def loss_function(w):
     return (w - 3) ** 2
 
+# ============================================================
+# 2. Gradient
+# ============================================================
+
+def gradient(w):
+    return 2 * (w - 3)
