@@ -14,11 +14,14 @@ class Neuron:
 
         print("Neuron is constructed successfully! {}, bias:{}".format(w, b))
 
-    
+    def liniar_neuron_function(self, x):
+        z = np.dot(self.weights, x) + self.bias
+
+        return(z)
+
 
 #liniar neuron function
-z = np.dot(w, x) + b
-print("Weighted sum (z):", z)
+
 
 #activation function
 def sigmoid(z):
