@@ -6,6 +6,16 @@ x = np.array([2.0, 3.0, 1.0])
 w = np.array([0.4, -0.2, 0.7])
 b = 0.1
 
+
+class Neuron:
+    def __init__(self, w, b):
+        self.weights = w
+        self.bias = b
+
+        print("Neuron is constructed successfully! {}, bias:{}".format(w, b))
+
+    
+
 #liniar neuron function
 z = np.dot(w, x) + b
 print("Weighted sum (z):", z)
