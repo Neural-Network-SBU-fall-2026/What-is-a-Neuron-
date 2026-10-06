@@ -39,23 +39,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.01_biological_neuron.executor": "Run",
-    "Python.01_single_neuron.executor": "Run",
-    "Python.02_loss_functions.executor": "Run",
-    "Python.03_activation_functions.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "eduState",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.01_biological_neuron.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01_single_neuron.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02_loss_functions.executor&quot;: &quot;Run&quot;,
+    &quot;Python.03_activation_functions.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;eduState&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -75,6 +75,7 @@
       <workItem from="1791112805189" duration="2163000" />
       <workItem from="1791191584917" duration="617000" />
       <workItem from="1791204893403" duration="1933000" />
+      <workItem from="1791285406551" duration="260000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -316,7 +317,31 @@
       <option name="project" value="LOCAL" />
       <updated>1791206469715</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="gradient libs">
+      <option name="closed" value="true" />
+      <created>1791285598974</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1791285598974</updated>
+    </task>
+    <task id="LOCAL-00032" summary="gradient Function">
+      <option name="closed" value="true" />
+      <created>1791285617993</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1791285617993</updated>
+    </task>
+    <task id="LOCAL-00033" summary="gradient Gradient">
+      <option name="closed" value="true" />
+      <created>1791285652437</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1791285652437</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
