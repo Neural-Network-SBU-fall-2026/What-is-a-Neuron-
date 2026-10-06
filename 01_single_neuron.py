@@ -1,44 +1,59 @@
 import numpy as np
+import matplotlib
+
+matplotlib.use("TkAgg")
+
 import matplotlib.pyplot as plt
+
+
+class Neuron:
+    def __init__(self, w, b):
+        self.weights = w
+        self.bias = b
+
+        print("Neuron is constructed successfully! {}, bias:{}".format(w, b))
+
+    def liniar_neuron_function(self, x):
+        z = np.dot(self.weights, x) + self.bias
+
+        return(z)
+
+    def activation_function(self, input):
+        return 1 / (1 + np.exp(-input))
+
+    def binary_cross_entropy(self, y, y_hat):
+        epsilon = 1e-15
+        y_hat = np.clip(y_hat, epsilon, 1 - epsilon)
+        loss = -(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+        return loss
+
 
 #input data
 x = np.array([2.0, 3.0, 1.0])
 w = np.array([0.4, -0.2, 0.7])
 b = 0.1
 
+neuron1 = Neuron(w, b)
 #liniar neuron function
-z = np.dot(w, x) + b
-print("Weighted sum (z):", z)
+z = neuron1.liniar_neuron_function(x)
 
-#activation function
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
 
-y_hat = sigmoid(z)
+y_hat = neuron1.activation_function(z)
 print("Prediction:", y_hat)
 
 #actual lable
 y = 1
 print("Actual label:", y)
 
-def binary_cross_entropy(y, y_hat):
-    epsilon = 1e-15
 
-    y_hat = np.clip(y_hat, epsilon, 1 - epsilon)
-
-    loss = -(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
-
-    return loss
-
-
-loss = binary_cross_entropy(y, y_hat)
+loss = neuron1.binary_cross_entropy(y, y_hat)
 print("Loss:", loss)
 
 
 predictions = np.linspace(0.001, 0.999, 500)
 
 losses = [
-    binary_cross_entropy(1, p)
+    neuron1.binary_cross_entropy(1, p)
     for p in predictions
 ]
 
@@ -66,7 +81,7 @@ predictions = np.array([
 ])
 
 for prediction in predictions:
-    loss = binary_cross_entropy(1, prediction)
+    loss = neuron1.binary_cross_entropy(1, prediction)
 
     print(
         f"Prediction: {prediction:.2f} | "
