@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="test on new branch">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="cc6dc54d-ae28-49ca-88f9-fb394c71de85" name="Changes" comment="gradient Final Result" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -371,9 +369,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="init" />
-    <MESSAGE value="input data" />
-    <MESSAGE value="liniar neuron function" />
     <MESSAGE value="ctivation function" />
     <MESSAGE value="actual lable" />
     <MESSAGE value="loss" />
@@ -394,7 +389,12 @@
     <MESSAGE value="activation_functions plt" />
     <MESSAGE value="activation_functions plt sigmoid" />
     <MESSAGE value="test on new branch" />
-    <option name="LAST_COMMIT_MESSAGE" value="test on new branch" />
+    <MESSAGE value="gradient libs" />
+    <MESSAGE value="gradient Function" />
+    <MESSAGE value="gradient Gradient" />
+    <MESSAGE value="gradient Initial Parameters" />
+    <MESSAGE value="gradient Final Result" />
+    <option name="LAST_COMMIT_MESSAGE" value="gradient Final Result" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NeuralNetwork0$01_biological_neuron.coverage" NAME="01_biological_neuron Coverage Results" MODIFIED="1791204968113" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Human Nueoron" />

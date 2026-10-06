@@ -73,3 +73,59 @@ print(f"Final weight: {w:.6f}")
 print(f"Final loss: {loss_function(w):.6f}")
 
 print("=" * 60)
+
+# ============================================================
+# 7. Plot Loss Function
+# ============================================================
+
+w_values = np.linspace(-6, 8, 500)
+
+loss_values = loss_function(w_values)
+
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(
+    w_values,
+    loss_values,
+    label="Loss Function"
+)
+
+plt.scatter(
+    w_history,
+    loss_history,
+    label="Gradient Descent Steps"
+)
+
+plt.xlabel("Weight (w)")
+plt.ylabel("Loss")
+
+plt.title("Gradient Descent")
+
+plt.legend()
+
+plt.grid(True)
+
+plt.show()
+
+
+# ============================================================
+# 8. Plot Loss During Training
+# ============================================================
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(
+    range(1, epochs + 1),
+    loss_history
+)
+
+plt.xlabel("Epoch")
+
+plt.ylabel("Loss")
+
+plt.title("Loss During Training")
+
+plt.grid(True)
+
+plt.show()
