@@ -121,10 +121,57 @@ plt.plot(
 )
 
 plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Loss During Training")
+plt.grid(True)
+plt.show()
 
+
+def run_gradient_descent(learning_rate, epochs=30):
+
+    w = -5.0
+
+    history = []
+
+    for epoch in range(epochs):
+
+        loss = loss_function(w)
+
+        grad = gradient(w)
+
+        history.append(loss)
+
+        w = w - learning_rate * grad
+
+    return history
+
+learning_rates = [
+    0.01,
+    0.05,
+    0.1,
+    0.5,
+    1.0
+]
+
+
+plt.figure(figsize=(10, 6))
+
+for lr in learning_rates:
+
+    history = run_gradient_descent(lr)
+
+    plt.plot(
+        history,
+        label=f"LR = {lr}"
+    )
+
+
+plt.xlabel("Epoch")
 plt.ylabel("Loss")
 
-plt.title("Loss During Training")
+plt.title("Effect of Learning Rate")
+
+plt.legend()
 
 plt.grid(True)
 
