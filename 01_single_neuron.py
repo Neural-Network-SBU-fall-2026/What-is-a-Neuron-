@@ -22,6 +22,12 @@ class Neuron:
     def activation_function(self, input):
         return 1 / (1 + np.exp(-input))
 
+    def binary_cross_entropy(self, y, y_hat):
+        epsilon = 1e-15
+        y_hat = np.clip(y_hat, epsilon, 1 - epsilon)
+        loss = -(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+        return loss
+
 #liniar neuron function
 
 
