@@ -19,6 +19,8 @@ class Neuron:
 
         return(z)
 
+    def activation_function(self, input):
+        return 1 / (1 + np.exp(-input))
 
 #liniar neuron function
 
